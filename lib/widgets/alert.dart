@@ -28,7 +28,7 @@ class AlertMessage{
               offset: Offset(2, 4),
             )
           ],
-          borderRadius: BorderRadius.circular(4),
+          borderRadius: BorderRadius.circular(30),
         ),
         child: Row(
           children: [
@@ -41,7 +41,7 @@ class AlertMessage{
             ),
             const Spacer(),
             TextButton(
-              onPressed: () => {debugPrint("Undid")}, child: Text("X")),
+              onPressed: () => {debugPrint("Undid")}, child: Text("✖")),
           ],
         )),
     );

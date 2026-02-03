@@ -34,7 +34,7 @@ class UserService{
     } else {
       ResponseDataMap response = ResponseDataMap(
         status: false,
-        message: "gagal menambah user dengan code error ${register.statusCode}",
+        message: "Gagal menambah user dengan code error ${register.statusCode}",
       );
       return response;
     }
@@ -58,21 +58,21 @@ class UserService{
         await userLogin.prefs();
         ResponseDataMap response = ResponseDataMap(
           status: true,
-          message: "Sukses login user",
+          message: "Login berhasil",
           data: data,
         );
         return response;
       } else {
         ResponseDataMap response = ResponseDataMap(
           status: false,
-          message: 'Email dan password salah',
+          message: 'Email atau password salah',
         );
         return response;
       }
     } else {
       ResponseDataMap response = ResponseDataMap(
         status: false,
-        message: "gagal login user dengan code error ${register.statusCode}",
+        message: "Gagal login user dengan code error ${register.statusCode}",
       );
       return response;
     }

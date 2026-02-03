@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:produktif_postman_toko1/models/user_login.dart';
+import 'package:produktif_postman_toko1/widgets/bottom_nav.dart';
 
 class DashboardView extends StatefulWidget {
   const DashboardView({super.key});
@@ -80,7 +81,7 @@ class _DashboardViewState extends State<DashboardView> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Hi, ${nama ?? 'User'} 👋",
+                          "Hi, ${nama ?? 'User'} !",
                           style: const TextStyle(
                             fontSize: 26,
                             fontWeight: FontWeight.bold,
@@ -100,7 +101,7 @@ class _DashboardViewState extends State<DashboardView> {
                         const SizedBox(height: 20),
 
                         const Text(
-                          "Welcome to Dress Store 👗",
+                          "Welcome to Velveté - Find Looks You’ll Love ❤︎",
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w600,
@@ -161,6 +162,7 @@ class _DashboardViewState extends State<DashboardView> {
           ),
         ),
       ),
+      bottomNavigationBar: BottomNav(0),
     );
   }
 }
