@@ -1,8 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:produktif_postman_toko1/models/response_data_list.dart';
 import 'package:produktif_postman_toko1/widgets/bottom_nav.dart';
+import 'package:produktif_postman_toko1/services/product.dart';
 
-class ProductView extends StatelessWidget {
+class ProductView extends StatefulWidget {
   const ProductView({super.key});
+
+  @override
+  State<ProductView> createState() => _ProductViewState();
+}
+
+class _ProductViewState extends State<ProductView> {
+  ProductService product = ProductService();
+  List? barang;
+
+  getBarang() async {
+    ResponseDataList getProduct = await product.getProduct();
+    setState(() {
+      barang = getProduct.data;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getBarang();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,109 +42,70 @@ class ProductView extends StatelessWidget {
           ),
         ),
         child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              children: [
-                const SizedBox(height: 30),
-
-                const Text(
-                  "Products",
-                  style: TextStyle(
-                    fontSize: 42,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.black,
-                  ),
+          child: Column(
+            children: [
+              const SizedBox(height: 40),
+              const Text(
+                "Our Collection",
+                style: TextStyle(
+                  fontSize: 40,
+                  fontWeight: FontWeight.w900,
+                  color: Colors.black,
                 ),
-
-                const SizedBox(height: 30),
-
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(40),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(.12),
-                          blurRadius: 15,
-                          offset: const Offset(0, 6),
-                        )
-                      ],
-                    ),
-                    child: GridView.count(
-                      crossAxisCount: 2,
-                      mainAxisSpacing: 16,
-                      crossAxisSpacing: 16,
-                      childAspectRatio: .7,
-                      children: [
-                        productItem("Dress Pink", "Rp 120.000"),
-                        productItem("Blouse White", "Rp 95.000"),
-                        productItem("Skirt Korean", "Rp 110.000"),
-                        productItem("Cardigan Soft", "Rp 130.000"),
-                        productItem("Outer Pastel", "Rp 150.000"),
-                        productItem("Mini Dress", "Rp 140.000"),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
+              ),
+              const SizedBox(height: 20),
+              Expanded(
+                child: barang != null
+                    ? ListView.builder(
+                        padding: const EdgeInsets.all(20),
+                        itemCount: barang!.length,
+                        itemBuilder: (context, index) {
+                          return Container(
+                            margin: const EdgeInsets.only(bottom: 20),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(25),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(.1),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 5),
+                                )
+                              ],
+                            ),
+                            child: ListTile(
+                              contentPadding: const EdgeInsets.all(12),
+                              leading: ClipRRect(
+                                borderRadius: BorderRadius.circular(12),
+                                child: Image.network(
+                                  "https://learn.smktelkom-mlg.sch.id/toko/api${barang![index].image}",
+                                  width: 60,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return const Icon(Icons.broken_image, size: 60, color: Colors.grey);
+                                  },
+                                ),
+                              ),
+                              title: Text(
+                                barang![index].title??'',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              subtitle: Text(
+                                "Rp ${barang![index].harga} | Stok: ${barang![index].stok}",
+                              ),
+                            ),
+                          );
+                        },
+                      )
+                    : const Center(child: CircularProgressIndicator()),
+              ),
+            ],
           ),
         ),
       ),
       bottomNavigationBar: BottomNav(1),
-    );
-  }
-
-  Widget productItem(String name, String price) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.grey.shade100,
-        borderRadius: BorderRadius.circular(22),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Colors.pink.shade100,
-                borderRadius: BorderRadius.circular(22),
-              ),
-              child: const Icon(
-                Icons.shopping_bag,
-                size: 50,
-                color: Colors.white,
-              ),
-            ),
-          ),
-
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  name,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  price,
-                  style: TextStyle(
-                    color: Colors.grey.shade600,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

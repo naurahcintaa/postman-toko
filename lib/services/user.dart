@@ -7,7 +7,16 @@ import 'package:http/http.dart' as http;
 class UserService{
   Future registerUser(data) async {
     var uri = Uri.parse(url.BaseUrl + "/auth/register");
-    var register = await http.post(uri, body: data);
+    var register = await http.post(
+      uri,
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: data,
+    );
+
+    print("REGISTER RESPONSE: ${register.body}");
 
     if (register.statusCode == 200) {
       var data = json.decode(register.body);
@@ -42,9 +51,19 @@ class UserService{
 
   Future loginUser(data) async {
     var uri = Uri.parse(url.BaseUrl + "/auth/login");
-    var register = await http.post(uri, body: data);
+    var register = await http.post(
+      uri,
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: data,
+    );
+    print("LOGIN RESPONSE: ${register.body}");
+
     if (register.statusCode == 200) {
       var data = json.decode(register.body);
+      
       if (data["status"] == true) {
         UserLogin userLogin = UserLogin(
           status: data["status"],
