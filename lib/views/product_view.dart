@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:produktif_postman_toko1/models/response_data_list.dart';
+import 'package:produktif_postman_toko1/widgets/alert.dart';
 import 'package:produktif_postman_toko1/widgets/bottom_nav.dart';
 import 'package:produktif_postman_toko1/services/product.dart';
+import 'product_form_view.dart';
 
 class ProductView extends StatefulWidget {
   const ProductView({super.key});
@@ -14,10 +16,12 @@ class _ProductViewState extends State<ProductView> {
   ProductService product = ProductService();
   List? barang;
 
+  String baseUrl = "http://learn.smktelkom-mlg.sch.id/toko/api";
+
   getBarang() async {
-    ResponseDataList getProduct = await product.getProduct();
+    ResponseDataList res = await product.getProduct();
     setState(() {
-      barang = getProduct.data;
+      barang = res.data;
     });
   }
 
@@ -30,81 +34,149 @@ class _ProductViewState extends State<ProductView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // ======================
+      // ➕ TAMBAH
+      // ======================
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          await Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => ProductFormView()),
+          );
+          getBarang();
+        },
+        child: const Icon(Icons.add),
+      ),
+
       body: Container(
-        width: double.infinity,
-        height: double.infinity,
         decoration: const BoxDecoration(
           image: DecorationImage(
             image: NetworkImage(
-              "https://media.istockphoto.com/id/1726740294/vector/pink-light-silky-background-luxury-pastel-satin-smooth-texture-banner-header-backdrop-design.jpg?s=612x612&w=0&k=20&c=0LpuI57meGEKzsiwZEcPpmy32qk-5Nl8MRXlNpNbDBc=",
+              "https://media.istockphoto.com/id/1726740294/vector/pink-light-silky-background-luxury-pastel-satin-smooth-texture-banner-header-backdrop-design.jpg",
             ),
             fit: BoxFit.cover,
           ),
         ),
         child: SafeArea(
-          child: Column(
-            children: [
-              const SizedBox(height: 40),
-              const Text(
-                "Our Collection",
-                style: TextStyle(
-                  fontSize: 40,
-                  fontWeight: FontWeight.w900,
-                  color: Colors.black,
-                ),
-              ),
-              const SizedBox(height: 20),
-              Expanded(
-                child: barang != null
-                    ? ListView.builder(
-                        padding: const EdgeInsets.all(20),
-                        itemCount: barang!.length,
-                        itemBuilder: (context, index) {
-                          return Container(
-                            margin: const EdgeInsets.only(bottom: 20),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(25),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(.1),
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 5),
-                                )
-                              ],
+          child: barang == null
+              ? const Center(child: CircularProgressIndicator())
+              : ListView.builder(
+                  padding: const EdgeInsets.all(20),
+                  itemCount: barang!.length,
+                  itemBuilder: (context, index) {
+                    var item = barang![index];
+
+                    return Container(
+                      margin: const EdgeInsets.only(bottom: 20),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: ListTile(
+                        // ======================
+                        // IMAGE
+                        // ======================
+                        leading: Builder(
+                          builder: (context) {
+                            print("IMAGE URL: ${item.image}");
+                            return Image.network(
+                              item.image ?? '',
+                              width: 60,
+                              height: 60,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                print("IMAGE ERROR: $error");
+                                return const Icon(Icons.broken_image);
+                              },
+                              loadingBuilder: (context, child, loadingProgress) {
+                                if (loadingProgress == null) return child;
+                                return const Center(
+                                  child: SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                        ),
+
+                        // ======================
+                        // TEXT
+                        // ======================
+                        title: Text(item.nama_barang ?? ''),
+                        subtitle: Text(
+                            "Rp ${item.harga} | Stok: ${item.stok}"),
+
+                        // ======================
+                        // MENU
+                        // ======================
+                        trailing: PopupMenuButton(
+                          onSelected: (value) async {
+                            if (value == "edit") {
+                              await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      ProductFormView(item: item),
+                                ),
+                              );
+                              getBarang();
+                            }
+
+                            if (value == "delete") {
+                              AlertMessage.showDeleteDialog(
+                                context: context,
+                                onConfirm: () async {
+                                  var res = await product
+                                      .deleteProduct(item.id);
+
+                                  AlertMessage.showSnackBar(
+                                    context,
+                                    message: res["message"],
+                                    status: res["status"],
+                                  );
+
+                                  getBarang();
+                                },
+                              );
+                            }
+                          },
+                          itemBuilder: (context) => [
+                            const PopupMenuItem(
+                              value: "edit",
+                              child: Text("Edit"),
                             ),
-                            child: ListTile(
-                              contentPadding: const EdgeInsets.all(12),
-                              leading: ClipRRect(
-                                borderRadius: BorderRadius.circular(12),
-                                child: Image.network(
-                                  "https://learn.smktelkom-mlg.sch.id/toko/api${barang![index].image}",
-                                  width: 60,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) {
-                                    return const Icon(Icons.broken_image, size: 60, color: Colors.grey);
-                                  },
-                                ),
-                              ),
-                              title: Text(
-                                barang![index].title??'',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              subtitle: Text(
-                                "Rp ${barang![index].harga} | Stok: ${barang![index].stok}",
-                              ),
+                            const PopupMenuItem(
+                              value: "delete",
+                              child: Text("Delete"),
+                            ),
+                          ],
+                        ),
+
+                        // ======================
+                        // TAP = EDIT
+                        // ======================
+                        onTap: () async {
+                          await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  ProductFormView(item: item),
                             ),
                           );
+                          getBarang();
                         },
-                      )
-                    : const Center(child: CircularProgressIndicator()),
-              ),
-            ],
-          ),
+                      ),
+                    );
+                  },
+                ),
         ),
       ),
+
       bottomNavigationBar: BottomNav(1),
     );
   }

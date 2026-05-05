@@ -2,7 +2,7 @@ import 'package:produktif_postman_toko1/services/url.dart' as url;
 
 class ProductModel {
   int? id;
-  String? title;
+  String? nama_barang;
   String? deskripsi;
   int? stok;
   int? harga;
@@ -10,7 +10,7 @@ class ProductModel {
 
   ProductModel({
     this.id,
-    this.title,
+    this.nama_barang,
     this.deskripsi,
     this.stok,
     this.harga,
@@ -20,13 +20,13 @@ class ProductModel {
   factory ProductModel.fromJson(Map<String, dynamic> json) {
     return ProductModel(
       id: json["id"],
-      title: json["nama_barang"],
+      nama_barang: json["nama_barang"],
       deskripsi: json["deskripsi"],
       stok: json["stok"],
       harga: json["harga"],
-      image: Uri.encodeFull(
-        "${url.BaseUrlTanpaAPi}/toko/${json["image"]}",
-      ),
+      image: json["image"] != null
+          ? "${url.BaseUrlTanpaAPi}/${json["image"]}"
+          : null,
     );
   }
 }

@@ -60,7 +60,7 @@ class _LoginViewState extends State<LoginView> {
                           color: Colors.black.withOpacity(.12),
                           blurRadius: 15,
                           offset: const Offset(0, 6),
-                        )
+                        ),
                       ],
                     ),
                     child: Form(
@@ -165,10 +165,10 @@ class _LoginViewState extends State<LoginView> {
                                     });
 
                                     if (result.status == true) {
-                                      AlertMessage().showAlert(
+                                      AlertMessage.showSnackBar(
                                         context,
-                                        result.message,
-                                        true,
+                                        message: result.message,
+                                        status: true,
                                       );
                                       Future.delayed(
                                         const Duration(seconds: 2),
@@ -180,10 +180,10 @@ class _LoginViewState extends State<LoginView> {
                                         },
                                       );
                                     } else {
-                                      AlertMessage().showAlert(
+                                      AlertMessage.showSnackBar(
                                         context,
-                                        result.message,
-                                        false,
+                                        message: result.message,
+                                        status: false,
                                       );
                                     }
                                   }
@@ -219,12 +219,10 @@ class _LoginViewState extends State<LoginView> {
                                 child: Divider(color: Colors.grey.shade400),
                               ),
                               const Padding(
-                                padding:
-                                    EdgeInsets.symmetric(horizontal: 8),
+                                padding: EdgeInsets.symmetric(horizontal: 8),
                                 child: Text(
                                   "OR",
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.w500),
+                                  style: TextStyle(fontWeight: FontWeight.w500),
                                 ),
                               ),
                               Expanded(

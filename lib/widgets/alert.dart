@@ -1,50 +1,98 @@
 import 'package:flutter/material.dart';
 
-class AlertMessage{
-  showAlert(BuildContext context, message, status) {
-    Color? warnafill;
-    Color warnagaris;
-    if (status == true) {
-      warnafill = Colors.green[100];
-      warnagaris = Colors.green;
-    } else {
-      warnafill = Colors.pink[200];
-      warnagaris = const Color.fromARGB(255, 186, 0, 84);
-    }
+class AlertMessage {
 
-    SnackBar snackBar = SnackBar(
+  // =========================
+  // ✅ SNACKBAR (SUCCESS / ERROR)
+  // =========================
+  static void showSnackBar(
+    BuildContext context, {
+    required String message,
+    required bool status,
+  }) {
+    Color bgColor = status ? Colors.green.shade100 : Colors.pink.shade100;
+    Color borderColor = status ? Colors.green : Colors.pink;
+
+    IconData icon = status ? Icons.check_circle : Icons.error;
+
+    final snackBar = SnackBar(
       backgroundColor: Colors.transparent,
       elevation: 0,
+      behavior: SnackBarBehavior.floating,
       content: Container(
-        padding: EdgeInsets.all(8),
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: warnafill,
-          border: Border.all(color: warnagaris, width: 3),
-          boxShadow: [
+          color: bgColor,
+          border: Border.all(color: borderColor, width: 2),
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: const [
             BoxShadow(
-              color: Color(0x12000000),
-              spreadRadius: 2.0,
-              blurRadius: 8.0,
-              offset: Offset(2, 4),
+              color: Color(0x22000000),
+              blurRadius: 6,
+              offset: Offset(2, 3),
             )
           ],
-          borderRadius: BorderRadius.circular(30),
         ),
         child: Row(
           children: [
-            Icon(Icons.favorite, color: const Color.fromARGB(255, 255, 68, 140)),
-            Padding(
-              padding: EdgeInsets.only(left: 8.0),
+            Icon(icon, color: borderColor),
+            const SizedBox(width: 10),
+            Expanded(
               child: Text(
-                  message,
-                  style: TextStyle(color: const Color.fromARGB(255, 0, 0, 0))),
+                message,
+                style: const TextStyle(color: Colors.black),
+              ),
             ),
-            const Spacer(),
-            TextButton(
-              onPressed: () => {debugPrint("Undid")}, child: Text("✖")),
+            GestureDetector(
+              onTap: () {
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+              },
+              child: const Icon(Icons.close, size: 18),
+            )
           ],
-        )),
+        ),
+      ),
     );
+
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
+  // =========================
+  // ⚠️ ALERT KONFIRMASI DELETE
+  // =========================
+  static void showDeleteDialog({
+    required BuildContext context,
+    required Function onConfirm,
+  }) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: const Text("Konfirmasi"),
+          content: const Text("Yakin mau hapus data ini?"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text("Batal"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                onConfirm(); // 🔥 jalankan delete
+              },
+              child: const Text(
+                "Hapus",
+                style: TextStyle(color: Colors.red),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 }

@@ -220,10 +220,10 @@ class _RegisterUserViewState extends State<RegisterUserView> {
                                       setState(() {
                                         role = null;
                                       });
-                                      AlertMessage().showAlert(
+                                      AlertMessage.showSnackBar(
                                         context,
-                                        result.message,
-                                        true,
+                                        message: result.message,
+                                        status: true,
                                       );
                                       Future.delayed(
                                         const Duration(seconds: 1),
@@ -235,10 +235,10 @@ class _RegisterUserViewState extends State<RegisterUserView> {
                                         },
                                       );
                                     } else {
-                                      AlertMessage().showAlert(
+                                      AlertMessage.showSnackBar(
                                         context,
-                                        result.message,
-                                        false,
+                                        message: result.message,
+                                        status: false,
                                       );
                                     }
                                   }
@@ -280,10 +280,15 @@ class _RegisterUserViewState extends State<RegisterUserView> {
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(40),
                                 ),
-                                side: const BorderSide(color: Color(0xffF472B6)),
+                                side: const BorderSide(
+                                  color: Color(0xffF472B6),
+                                ),
                               ),
                               onPressed: () {
-                                Navigator.pushReplacementNamed(context, '/login');
+                                Navigator.pushReplacementNamed(
+                                  context,
+                                  '/login',
+                                );
                               },
                               child: const Text(
                                 "Login",
